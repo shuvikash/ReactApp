@@ -8,10 +8,13 @@ class TableView extends React.Component {
         super(props);
         this.state = {
            users: [],
-		   searchText: ""
+		   searchText: "",
+		   sortOrder:'ASC',
+		   sortDirection:''
 		};
 		this.detailView=this.detailView.bind(this);
-		this.compareBy=this.compareBy.bind(this);
+		this.ascCompareBy=this.ascCompareBy.bind(this);
+		this.dscCompareBy=this.dscCompareBy.bind(this);
 		this.sortBy=this.sortBy.bind(this);
 		this.handleSearchText=this.handleSearchText.bind(this);
 	}
@@ -26,18 +29,32 @@ class TableView extends React.Component {
 			this.setState({ users });
 		  })
 }
-compareBy(key) {
+ascCompareBy(key) {
     return function (a, b) {
       if (a[key] < b[key]) return -1;
       if (a[key] > b[key]) return 1;
       return 0;
     };
   }
+  dscCompareBy(key) {
+    return function (a, b) {
+      if (a[key] > b[key]) return -1;
+      if (a[key] < b[key]) return 1;
+      return 0;
+    };
+  }
  
   sortBy(key) {
     let arrayCopy = [...this.state.users];
-    arrayCopy.sort(this.compareBy(key));
-    this.setState({users: arrayCopy});
+	if(this.state.sortOrder==='ASC')
+	{
+    arrayCopy.sort(this.ascCompareBy(key));
+    this.setState({users: arrayCopy,sortOrder: 'DSC',sortDirection:'&#x25B2;'});
+	}
+	else{
+	arrayCopy.sort(this.dscCompareBy(key));
+    this.setState({users: arrayCopy,sortOrder: 'ASC',sortDirection:'&#x25BC;'});
+	}
   }
   handleSearchText(e) {
 		this.setState({ searchText: e.target.value });
@@ -47,6 +64,7 @@ compareBy(key) {
 	    let filteredUsers = this.state.users.filter((user)=>{
         return user.first_name.toLowerCase().indexOf(this.state.searchText.toLowerCase()) !==-1;
 		});
+
 	  return (
 	  <div className="container">
 	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
